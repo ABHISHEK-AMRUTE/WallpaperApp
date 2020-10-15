@@ -61,12 +61,18 @@ class _PreviewInDetailState extends State<PreviewInDetail> {
   Widget build(BuildContext context) {
     return Material(
       child: Stack(children: [
-        CachedNetworkImage(
-            // fit: BoxFit.fill,
-            height: MediaQuery.of(context).size.height,
-            placeholder: (context, url) =>
-                Image.asset("assets/images/sample.gif", height: 100),
-            imageUrl: widget.urlPlacehoder),
+       
+        InteractiveViewer(
+          panEnabled: true,
+          minScale: 0.5,
+          maxScale: 50,
+                  child: CachedNetworkImage(
+              // fit: BoxFit.fill,
+              height: MediaQuery.of(context).size.height,
+              placeholder: (context, url) =>
+                  Image.asset("assets/images/sample.gif", height: 100),
+              imageUrl: widget.urlPlacehoder),
+        ),
         Align(
           alignment: Alignment.topRight,
           child: Padding(
