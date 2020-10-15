@@ -6,6 +6,7 @@ import 'package:wall_paper_app/keys/key.dart';
 
 class FetchFile {
   List<ListClass> results = new List<ListClass>();
+  String nextPageUrl;
 
   Future<void> getImageByUrl(String fetchUrl) async {
     Keys keyObj = Keys();
@@ -35,8 +36,9 @@ class FetchFile {
         itemObject.landscape = element["src"]["landscape"];
 
         results.add(itemObject);
-       
       });
+
+      nextPageUrl = jsonData["next_page"];
     }
   }
 }

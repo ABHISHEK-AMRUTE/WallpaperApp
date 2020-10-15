@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:wall_paper_app/model/fetch_model.dart';
@@ -20,6 +21,7 @@ class _HomeState extends State<Home> {
   List<ListClass> curated = new List<ListClass>();
   List<Choices> choices = new List<Choices>();
   var searchBar = TextEditingController();
+  String nextPageURL;
 
   @override
   void dispose() {
@@ -47,6 +49,18 @@ class _HomeState extends State<Home> {
     await obj.getImageByUrl(
         "https://api.pexels.com/v1/search?query=$keyWord&per_page=15");
     curated = obj.results;
+    nextPageURL = obj.nextPageUrl;
+    setState(() {
+      _loading = false;
+      searchBarVisibility = false;
+    });
+  }
+
+  void loadMoreImages(String url) async {
+    FetchFile obj = new FetchFile();
+    await obj.getImageByUrl(url);
+    curated.addAll(obj.results);
+    nextPageURL = obj.nextPageUrl;
     setState(() {
       _loading = false;
       searchBarVisibility = false;
@@ -146,24 +160,52 @@ class _HomeState extends State<Home> {
                           shrinkWrap: true,
                           scrollDirection: Axis.vertical,
                           itemBuilder: (context, index) {
-                            return ImageTiles(
-                                width: curated[index].width,
-                                height: curated[index].height,
-                                photographerId: curated[index].photographerId,
-                                url: curated[index].url,
-                                photographerName:
-                                    curated[index].photographerName,
-                                photographerUrl: curated[index].photographerUrl,
-                                original: curated[index].original,
-                                large2x: curated[index].large2x,
-                                large: curated[index].large2x,
-                                medium: curated[index].medium,
-                                small: curated[index].small,
-                                portrait: curated[index].portrait,
-                                landscape: curated[index].landscape,
-                                tiny: curated[index].tiny);
+                            if (curated.length == 0) {
+                              return Padding(padding: EdgeInsets.all(10),
+                              child: Container(
+                                alignment: Alignment.center,
+                                child: Column(
+                                  children: [Image.asset("assets/images/empty.gif"),Text("No results found",
+                                  style: TextStyle(fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue),)],
+                                ),
+                              ),);
+                            } else {
+                              if (index < curated.length) {
+                                return ImageTiles(
+                                    width: curated[index].width,
+                                    height: curated[index].height,
+                                    photographerId:
+                                        curated[index].photographerId,
+                                    url: curated[index].url,
+                                    photographerName:
+                                        curated[index].photographerName,
+                                    photographerUrl:
+                                        curated[index].photographerUrl,
+                                    original: curated[index].original,
+                                    large2x: curated[index].large2x,
+                                    large: curated[index].large2x,
+                                    medium: curated[index].medium,
+                                    small: curated[index].small,
+                                    portrait: curated[index].portrait,
+                                    landscape: curated[index].landscape,
+                                    tiny: curated[index].tiny);
+                              } else {
+                                return Padding(
+                                    padding: EdgeInsets.all(10),
+                                    child: RaisedButton(
+                                      color: Colors.blue,
+                                      
+                                      onPressed: () {
+                                        loadMoreImages(nextPageURL);
+                                      },
+                                      child: Text("Load More",style: TextStyle(color: Colors.white),),
+                                    ));
+                              }
+                            }
                           },
-                          itemCount: curated.length,
+                          itemCount: curated.length + 1,
                         ),
                       ))
                     ],
@@ -213,22 +255,25 @@ class ImageTiles extends StatelessWidget {
         focusColor: Colors.blueGrey,
         splashColor: Colors.lightBlue,
         onTap: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => PreviewInDetail( width:width,
-                                height:height,
-                                photographerId: photographerId,
-                                url:url,
-                                photographerName: photographerName,
-                                photographerUrl: photographerUrl,
-                                original: original,
-                                large2x: large2x,
-                                large:large2x,
-                                medium: medium,
-                                small: small,
-                                portrait: portrait,
-                                landscape: landscape,
-                                tiny:tiny,
-                                urlPlacehoder: portrait)));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => PreviewInDetail(
+                      width: width,
+                      height: height,
+                      photographerId: photographerId,
+                      url: url,
+                      photographerName: photographerName,
+                      photographerUrl: photographerUrl,
+                      original: original,
+                      large2x: large2x,
+                      large: large2x,
+                      medium: medium,
+                      small: small,
+                      portrait: portrait,
+                      landscape: landscape,
+                      tiny: tiny,
+                      urlPlacehoder: portrait)));
         },
         child: Card(
           elevation: 2,
