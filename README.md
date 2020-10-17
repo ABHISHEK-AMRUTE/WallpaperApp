@@ -1,6 +1,8 @@
 # wall_paper_app
 
-Flutter based Wallpaper Application. You can contribute by opening a new issue and PR.
+Flutter based Wallpaper Application.
+The app allows you to view and download your favorite wallpaper in different orientaion and size.
+You can contribute by opening a new issue and PR.
 
 
 ## Screenshots
